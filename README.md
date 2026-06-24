@@ -13,13 +13,15 @@ Earthquake lets a GM trigger a configurable earthquake effect across every conne
 
 The module includes bundled sounds, a draggable compendium macro, and an optional chat prompt for Dexterity checks. Tokens that fail the configured DC can be knocked Prone automatically.
 
+Earthquake 3.1.0 is verified for Foundry VTT 14 while retaining runtime fallbacks for Foundry VTT 10-13. If your table needs the exact pre-v14 package, use the `v3.0.0` release instead of `latest`.
+
 ------------------------------------------------------------------
 
 ## Installation
 
 1) Install Earthquake from the Module Installation page of Foundry VTT
 
-https://github.com/edgedoggo/earthquake/releases/download/latest/module.json
+https://github.com/openkyle/earthquake/releases/download/latest/module.json
 
 2) Enable it in your world.
 3) Open the **Earthquake Macros** compendium pack.

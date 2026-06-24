@@ -23,18 +23,15 @@ Hooks.once("init", () => {
 
 Hooks.once("ready", () => {
   game.socket.on(SOCKET, handleSocketMessage);
+  document.body?.addEventListener("click", event => {
+    const button = event.target?.closest?.("[data-earthquake-roll]");
+    if (button) onRollButtonClick(event, button);
+  });
 });
 
-Hooks.on("renderChatMessage", (message, html) => {
-  const buttons = html.find?.("[data-earthquake-roll]") ?? html.querySelectorAll?.("[data-earthquake-roll]");
-  buttons?.on?.("click", event => onRollButtonClick(event));
-  buttons?.forEach?.(button => button.addEventListener("click", event => onRollButtonClick(event)));
-});
-
-async function onRollButtonClick(event) {
-    event.preventDefault();
-    const button = event.currentTarget;
-    await rollDexterityForToken(button.dataset.tokenId, button.dataset.messageId);
+async function onRollButtonClick(event, button = event.currentTarget) {
+  event.preventDefault();
+  await rollDexterityForToken(button.dataset.tokenId, button.dataset.messageId);
 }
 
 function registerSettings() {
@@ -176,15 +173,12 @@ async function playEarthquakeSound(src, volume = 0.8) {
   if (!src) return;
 
   try {
-    if (foundry.audio?.AudioHelper?.play) {
-      await foundry.audio.AudioHelper.play({ src, volume, autoplay: true, loop: false }, false);
-    } else if (globalThis.AudioHelper?.play) {
-      await globalThis.AudioHelper.play({ src, volume, autoplay: true, loop: false }, false);
-    } else {
-      const audio = new Audio(src);
-      audio.volume = volume;
-      await audio.play();
-    }
+    const AudioHelper = globalThis.foundry?.audio?.AudioHelper ?? globalThis.AudioHelper;
+    if (AudioHelper?.play) return await AudioHelper.play({ src, volume, autoplay: true, loop: false }, false);
+
+    const audio = new Audio(src);
+    audio.volume = volume;
+    await audio.play();
   } catch (error) {
     console.warn(`${MODULE_ID} | Could not play earthquake sound`, error);
   }
@@ -221,13 +215,13 @@ async function promptDexterityChecks(data = buildEarthquakeData()) {
   const tokenRows = tokens.map(token => {
     const ownerNames = game.users
       .filter(user => !user.isGM && token.actor.testUserPermission(user, "OWNER"))
-      .map(user => foundry.utils.escapeHTML(user.name))
+      .map(user => escapeHTML(user.name))
       .join(", ");
     const ownerText = ownerNames ? `<span class="earthquake-owners">${ownerNames}</span>` : "";
 
     return `<li>
       <button type="button" data-earthquake-roll data-token-id="${token.id}" data-message-id="">
-        ${foundry.utils.escapeHTML(token.name)}
+        ${escapeHTML(token.name)}
       </button>
       ${ownerText}
     </li>`;
@@ -287,7 +281,7 @@ async function rollDexterityForToken(tokenId, messageId) {
 
   await ChatMessage.create({
     speaker: ChatMessage.getSpeaker({ token }),
-    content: `<p><strong>${foundry.utils.escapeHTML(token.name)}</strong> rolled ${total} against Earthquake DC ${dc}: <strong>${failed ? "Failure" : "Success"}</strong>.</p>`
+    content: `<p><strong>${escapeHTML(token.name)}</strong> rolled ${total} against Earthquake DC ${dc}: <strong>${failed ? "Failure" : "Success"}</strong>.</p>`
   });
 
   if (failed && applyProne) {
@@ -336,14 +330,21 @@ async function applyProneToToken(tokenId) {
   if (!token?.actor) return;
 
   try {
-    if (typeof token.actor.toggleStatusEffect === "function") {
-      await token.actor.toggleStatusEffect("prone", { active: true });
+    const effect = CONFIG.statusEffects?.find(status => status.id === "prone" || status.name === "Prone" || status.label === "Prone");
+    if (!effect) return;
+
+    if (typeof token.document?.toggleStatusEffect === "function") {
+      await token.document.toggleStatusEffect("prone", { active: true });
       return;
     }
 
-    const effect = CONFIG.statusEffects?.find(status => status.id === "prone" || status.name === "Prone" || status.label === "Prone");
     if (effect && typeof token.document?.toggleActiveEffect === "function") {
       await token.document.toggleActiveEffect(effect, { active: true });
+      return;
+    }
+
+    if (typeof token.actor.toggleStatusEffect === "function") {
+      await token.actor.toggleStatusEffect("prone", { active: true });
       return;
     }
 
@@ -354,4 +355,13 @@ async function applyProneToToken(tokenId) {
     console.error(`${MODULE_ID} | Could not apply prone to ${token.name}`, error);
     ui.notifications?.error(`Earthquake: could not apply Prone to ${token.name}.`);
   }
+}
+
+function escapeHTML(value) {
+  const escape = globalThis.foundry?.utils?.escapeHTML;
+  if (escape) return escape(String(value ?? ""));
+
+  const element = document.createElement("div");
+  element.textContent = String(value ?? "");
+  return element.innerHTML;
 }

@@ -9,7 +9,7 @@
         },
         {
             "name": "edgedoggo",
-            "url": "https://github.com/edgedoggo/earthquake"
+            "url": "https://github.com/openkyle/earthquake"
         }
     ],
     "esmodules": [
@@ -27,11 +27,11 @@
             }
         }
     ],
-    "version": "3.0.0",
+    "version": "3.1.0",
     "compatibility": {
         "minimum": 10,
-        "verified": "13"
+        "verified": "14"
     },
-    "manifest": "https://github.com/edgedoggo/earthquake/releases/download/latest/module.json",
-    "download": "https://github.com/edgedoggo/earthquake/releases/download/latest/earthquake.zip"
+    "manifest": "https://github.com/openkyle/earthquake/releases/download/latest/module.json",
+    "download": "https://github.com/openkyle/earthquake/releases/download/latest/earthquake.zip"
 }
