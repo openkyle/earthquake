@@ -1,22 +1,37 @@
 {
     "id": "earthquake",
-    "title": "EarthQuake",
-    "description": "This module allows you to shake your players screen in a random fashion, at a configurable strength, for a configurable period.",
+    "title": "Earthquake",
+    "description": "Shake every connected player's canvas, play an earthquake sound, and optionally prompt canvas tokens for Dexterity checks to avoid falling prone.",
     "authors": [
         {
             "name": "knoself",
             "discord": "knoself"
+        },
+        {
+            "name": "edgedoggo",
+            "url": "https://github.com/edgedoggo/earthquake"
         }
     ],
     "esmodules": [
-        "scripts/client-side.js",
-        "scripts/earthquake-server.js"
+        "scripts/earthquake.js"
     ],
-    "version": "2.1",
+    "packs": [
+        {
+            "name": "earthquake-macros",
+            "label": "Earthquake Macros",
+            "type": "Macro",
+            "path": "packs/earthquake-macros.db",
+            "ownership": {
+                "PLAYER": "OBSERVER",
+                "ASSISTANT": "OWNER"
+            }
+        }
+    ],
+    "version": "3.0.0",
     "compatibility": {
         "minimum": 10,
-        "verified": "10.291"
+        "verified": "13"
     },
-    "manifest": "https://github.com/edgedoggo/fvtt-earthquake/releases/download/latest/module.json",
-    "download": "https://github.com/edgedoggo/fvtt-earthquake/releases/download/latest/earthquake.zip"
+    "manifest": "https://github.com/edgedoggo/earthquake/releases/download/latest/module.json",
+    "download": "https://github.com/edgedoggo/earthquake/releases/download/latest/earthquake.zip"
 }

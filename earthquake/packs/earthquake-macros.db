@@ -1,0 +1,1 @@
+{"_id":"EarthquakeMacro1","name":"Earthquake","type":"script","author":null,"img":"modules/earthquake/assets/icons/earthquake-macro.png","scope":"global","command":"if (game.earthquake?.trigger) {\n  await game.earthquake.trigger();\n} else {\n  ui.notifications.error(\"Earthquake module is not ready.\");\n}","folder":null,"sort":0,"ownership":{"default":0},"flags":{}}

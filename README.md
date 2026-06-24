@@ -1,7 +1,7 @@
-# fvtt-earthquake
-A Foundry Module to shake the screen like an earthquake!
+# Earthquake
+A Foundry VTT module to shake the screen like an earthquake.
 
-![earthquake](https://github.com/edgedoggo/fvtt-earthquake/assets/152747753/47535dc4-65bc-4d8e-9428-2de33f6b5a27)
+![earthquake](earthquake/assets/icons/earthquake-macro.png)
 
 Have you ever wanted your players to shake and tremble as the ground rocks and shifts below them? 
 Is a castle crumbling and they need to escape before its too late?
@@ -9,68 +9,51 @@ Is the very mountain itself exploding with magma as an active volcano erupts?
 
 Well, before now - your players might have no idea... but now - the whole map is SHAKING!!!
 
-EARTHQUAKE is my first release, it allows you to configure an earthquake effect across all players - client side (as well as GM)
+Earthquake lets a GM trigger a configurable earthquake effect across every connected player client, with optional GM shaking.
 
-The module is configurable, and can be modified at the macro level to change it up!
+The module includes bundled sounds, a draggable compendium macro, and an optional chat prompt for Dexterity checks. Tokens that fail the configured DC can be knocked Prone automatically.
 
 ------------------------------------------------------------------
 
-INSTRUCTIONS:
+## Installation
 
 1) Install Earthquake from the Module Installation page of Foundry VTT
 
-https://github.com/edgedoggo/fvtt-earthquake/releases/download/latest/module.json
+https://github.com/edgedoggo/earthquake/releases/download/latest/module.json
 
-3) Enable it in Modules
-4) You can download and use this sound: https://pastebin.com/1Kh2ZWcB
-5) Click to create a new macro, paste and configure the following:
-   
-------------------------------------------------------------------
+2) Enable it in your world.
+3) Open the **Earthquake Macros** compendium pack.
+4) Drag the **Earthquake** macro to your hotbar.
+5) Click the macro to shake all connected clients and play the configured sound.
 
+## Settings
+
+- **Shake Intensity**: How strong the canvas shake feels.
+- **Shake Duration**: How long the shake lasts.
+- **Earthquake Sound**: The audio file played for every connected client.
+- **Earthquake Sound Volume**: Per-client playback volume.
+- **Shake GM Canvas**: Allows the GM to opt out of the visual shake.
+- **Prompt Dexterity Checks**: Posts a chat prompt for every actor token on the active canvas.
+- **Dexterity Check DC**: The DC used by the chat prompt.
+- **Knock Prone On Failed Check**: Applies the Prone status when a token fails.
+
+## Macro API
+
+The included macro runs:
+
+```js
+await game.earthquake.trigger();
 ```
-// Configure the EarthQuake!
-const wiggleData = {
-    action: 'triggerEarthquake',
-    wiggleAmount: 100, // increase for more shake
-    wiggleDuration: 5000, // increase for longer duration
-};
 
-// Toggle for DM screen shake
-const dmShake = true; // Set to false to disable DM screen shake
+Advanced macros can override settings for a single earthquake:
 
-// Define the sound to play during the quake
-const soundToPlay = 'path-to-your-sound-file.ogg'; // Your file
-
-
-//There is no need to configure the following code (unless advanced configuration is desired)
-function playSound() {
-    const sound = new Audio(soundToPlay);
-    sound.volume = 0.5; // Adjust the volume as needed
-    sound.play();
-}
-
-// Broadcast Earthquake to Players and play sound
-game.socket.emit('module.earthquake', wiggleData);
-playSound();
-
-// Screen wiggle logic for the GM's screen (if enabled)
-if (dmShake) {
-    const originalPosition = canvas.stage.pivot.clone();
-    const startTime = Date.now();
-
-   function animateGMWiggle() {
-        const currentTime = Date.now();
-        const elapsedTime = currentTime - startTime;
-        if (elapsedTime >= wiggleData.wiggleDuration) {
-            canvas.animatePan({ x: originalPosition.x, y: originalPosition.y });
-            return;
-        }
-        const xOffset = (Math.random() * wiggleData.wiggleAmount - wiggleData.wiggleAmount / 2) | 0;
-        const yOffset = (Math.random() * wiggleData.wiggleAmount - wiggleData.wiggleAmount / 2) | 0;
-        canvas.animatePan({ x: originalPosition.x + xOffset, y: originalPosition.y + yOffset });
-        requestAnimationFrame(animateGMWiggle);
-    }
-
-   animateGMWiggle();
-}
+```js
+await game.earthquake.trigger({
+  intensity: 120,
+  duration: 8000,
+  soundPath: "modules/earthquake/assets/sounds/collapse.ogg",
+  promptDexterity: true,
+  dexterityDC: 16,
+  applyProne: true
+});
 ```
